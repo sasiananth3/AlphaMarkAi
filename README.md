@@ -47,3 +47,17 @@ NEXT_PUBLIC_QUSO_AFFILIATE_URL=https://quso.ai?via=w3mpxs
 
 Without this variable, the calls to action safely fall back to the official
 Quso AI homepage with the `w3mpxs` affiliate tracking parameter.
+
+## Google Search Console verification
+
+Create a URL-prefix property for `https://alphamarkai.vercel.app`, select the
+HTML tag verification method, and copy only the tag's `content` value into the
+Vercel environment variable below. Redeploy before clicking Verify in Search
+Console.
+
+```bash
+GOOGLE_SITE_VERIFICATION=your-google-verification-token
+```
+
+After verification, submit `https://alphamarkai.vercel.app/sitemap.xml` and
+request indexing for the homepage and `/reviews/quso-ai`.

@@ -4,6 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "About AlphaMarkAI",
   description: "Learn how AlphaMarkAI independently researches, reviews, and compares AI tools and SaaS products.",
+  alternates: { canonical: "/about" },
 };
 
 const principles = [
