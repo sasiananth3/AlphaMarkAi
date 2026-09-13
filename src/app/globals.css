@@ -44,3 +44,31 @@ footer{background:#111312;color:#f5f3ed;padding:75px 0 25px}.footer-top{display:
   .search-trigger span,.search-trigger kbd{display:none}
   .hero{padding-top:84px}
 }
+
+/* Readability and complete software identity system */
+:root{--muted:#4f534e;--label-blue:#103ca7}
+p{font-weight:400}
+.section-number,.tool-category,.meta,.trust-heading>span,.comparison-title>span,.recommendation>span,.lead-story>small,.side-stories article>small,.category-list a>span:first-child{color:var(--label-blue)}
+.panel-tool em,.filter-row .active{color:var(--label-blue)}
+.hero-deck,.tool-content>p,.tool-row p,.section-head>div:last-child>p,.section-head>p,.compare-intro>p:last-child,.comparison-title p,.lead-story p,.about-lead,.about-value-list p,.newsletter-inner>div:last-child>p{color:#444843}
+.panel-tool small,.stats span,.cat-count,.newsletter small,.global-search span{color:#555954}
+.feature-product-logo{position:absolute;right:35px;top:26px;width:72px;height:72px;object-fit:contain}
+.logo-quso,.logo-linear,.logo-chatgpt,.logo-github-copilot{background:#171918}
+.logo-notion,.logo-midjourney{background:#fff;border-color:#cbc7bd}
+.logo-granola{background:#dce9da;border-color:#bed0bc}
+.logo-clickup{background:#f0edff;border-color:#d7d0ff}
+.logo-jira{background:#eaf2ff;border-color:#c9daf8}
+.review-product-logo{width:48px;height:48px;flex:0 0 48px}
+.comparison-title h3 b{display:flex;align-items:center;gap:12px}
+.comparison-product-logo{width:34px;height:34px;flex:0 0 34px}
+.comparison-product-logo img{width:19px;height:19px}
+.comparison-pair{display:flex;align-items:center;gap:8px;min-width:0;color:var(--ink)}
+.comparison-pair b{font:600 12px/1.2 var(--font-sans)}
+.comparison-pair em{font:italic 12px var(--font-serif);color:var(--muted)}
+.pair-product-logo{width:28px;height:28px;flex:0 0 28px}
+.pair-product-logo img{width:16px;height:16px}
+
+@media(max-width:600px){
+  .feature-product-logo{width:58px;height:58px;right:24px;top:24px}
+  .comparison-pair{gap:7px}
+}
