@@ -2,6 +2,7 @@
 
 import { ArrowRight, Check, Menu, Minus, Search, X } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
+import Link from "next/link";
 
 const tools = [
   { name: "Claude", mark: "AI", desc: "Thoughtful AI for writing, analysis, and complex knowledge work.", category: "AI Assistants", score: "9.4", pick: true },
@@ -45,6 +46,6 @@ export default function Home() {
 
     <section className="newsletter"><div className="section-shell newsletter-inner"><div><p className="eyebrow"><span/> THE WEEKLY BRIEFING</p><h2>The useful side<br/><i>of AI.</i></h2></div><div>{submitted?<div className="success"><Check/> You’re on the list. See you next week.</div>:<><p>A concise weekly briefing of the tools, products, and software trends worth your attention.</p><form onSubmit={subscribe}><label><span className="sr-only">Your email address</span><input required type="email" placeholder="Your email address"/><button>Join Alphamarkai <ArrowRight size={16}/></button></label></form><small>No hype. No daily noise. Unsubscribe anytime.</small></>}</div></div></section>
 
-    <footer><div className="section-shell"><div className="footer-top"><div><Logo/><p>Independent intelligence for<br/>the modern software stack.</p></div>{[["Explore","AI Tools","SaaS Reviews","Comparisons","Categories","New Tools"],["Resources","Guides","Insights","Newsletter","Methodology"],["Company","About","Contact","Editorial Policy","Privacy","Terms"]].map(([head,...links])=><div className="footer-col" key={head}><b>{head}</b>{links.map(link=><a href="#" key={link}>{link}</a>)}</div>)}</div><div className="footer-bottom"><span>© 2026 ALPHAMARKAI. INDEPENDENT BY DESIGN.</span><div><a href="#">X / TWITTER</a><a href="#">LINKEDIN</a><a href="#">RSS</a></div><span>MADE FOR BETTER DECISIONS</span></div></div></footer>
+    <footer><div className="section-shell"><div className="footer-top"><div><Logo/><p>Independent intelligence for<br/>the modern software stack.</p></div>{[["Explore","AI Tools","SaaS Reviews","Comparisons","Categories","New Tools"],["Resources","Guides","Insights","Newsletter","Methodology"],["Company","About","Contact","Editorial Policy","Privacy","Terms"]].map(([head,...links])=><div className="footer-col" key={head}><b>{head}</b>{links.map(link=>link === "About" ? <Link href="/about" key={link}>{link}</Link> : <a href="#" key={link}>{link}</a>)}</div>)}</div><div className="footer-bottom"><span>© 2026 ALPHAMARKAI. INDEPENDENT BY DESIGN.</span><div><a href="#">X / TWITTER</a><a href="#">LINKEDIN</a><a href="#">RSS</a></div><span>MADE FOR BETTER DECISIONS</span></div></div></footer>
   </main>;
 }
