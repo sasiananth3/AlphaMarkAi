@@ -18,7 +18,7 @@ import styles from "./page.module.css";
 const siteUrl = "https://alphamarkai.vercel.app";
 const pageUrl = `${siteUrl}/reviews/quso-ai`;
 const affiliateUrl =
-  process.env.NEXT_PUBLIC_QUSO_AFFILIATE_URL ?? "https://quso.ai/";
+  process.env.NEXT_PUBLIC_QUSO_AFFILIATE_URL ?? "https://quso.ai?via=w3mpxs";
 
 const faqs = [
   {

@@ -42,8 +42,8 @@ URL from your Quso affiliate dashboard to the local `.env.local` file and to
 the Vercel project environment variables:
 
 ```bash
-NEXT_PUBLIC_QUSO_AFFILIATE_URL=https://your-quso-affiliate-link.example
+NEXT_PUBLIC_QUSO_AFFILIATE_URL=https://quso.ai?via=w3mpxs
 ```
 
 Without this variable, the calls to action safely fall back to the official
-Quso AI homepage but will not include personal affiliate tracking.
+Quso AI homepage with the `w3mpxs` affiliate tracking parameter.
