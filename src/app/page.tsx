@@ -1,20 +1,35 @@
 "use client";
 
 import { ArrowRight, Check, Menu, Minus, Search, X } from "lucide-react";
-import { FormEvent, useMemo, useState } from "react";
+import Image from "next/image";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
-const tools = [
-  { name: "Claude", mark: "AI", desc: "Thoughtful AI for writing, analysis, and complex knowledge work.", category: "AI Assistants", score: "9.4", pick: true },
-  { name: "Cursor", mark: "C", desc: "An AI-first code editor that understands your entire codebase.", category: "AI Coding", score: "9.2", pick: true },
-  { name: "Perplexity", mark: "P", desc: "Research with sourced, direct answers from across the web.", category: "AI Search", score: "8.9" },
-  { name: "Granola", mark: "G", desc: "A quieter, more useful way to take meeting notes.", category: "Productivity", score: "8.7" },
-  { name: "Midjourney", mark: "M", desc: "High-quality image generation with a distinct creative edge.", category: "Design", score: "8.8" },
+type Tool = {
+  name: string;
+  mark: string;
+  desc: string;
+  category: string;
+  score: string;
+  pick?: boolean;
+  logo?: string;
+  tone: string;
+};
+
+const tools: Tool[] = [
+  { name: "Claude", mark: "AI", logo: "/logos/claude.svg", tone: "logo-claude", desc: "Thoughtful AI for writing, analysis, and complex knowledge work.", category: "AI Assistants", score: "9.4", pick: true },
+  { name: "Cursor", mark: "C", logo: "/logos/cursor.svg", tone: "logo-cursor", desc: "An AI-first code editor that understands your entire codebase.", category: "AI Coding", score: "9.2", pick: true },
+  { name: "Perplexity", mark: "P", logo: "/logos/perplexity.svg", tone: "logo-perplexity", desc: "Research with sourced, direct answers from across the web.", category: "AI Search", score: "8.9" },
+  { name: "Granola", mark: "G", tone: "logo-granola", desc: "A quieter, more useful way to take meeting notes.", category: "Productivity", score: "8.7" },
+  { name: "Midjourney", mark: "M", tone: "logo-midjourney", desc: "High-quality image generation with a distinct creative edge.", category: "Design", score: "8.8" },
 ];
 const categories = ["AI Writing", "Coding", "Design", "Marketing", "Productivity", "Sales", "Automation", "Analytics", "Customer Support", "Project Management", "Finance"];
 
 function Logo() { return <a className="logo" href="#top"><span className="logo-mark">A</span><span>alphamark<span>ai</span></span></a>; }
 function Score({ value }: { value: string }) { return <span className="score"><b>{value}</b><small>/10</small></span>; }
+function ToolMark({ tool, className = "" }: { tool: Tool; className?: string }) {
+  return <span className={`product-mark ${tool.tone} ${className}`.trim()} aria-hidden="true">{tool.logo ? <Image src={tool.logo} alt="" width={24} height={24} /> : tool.mark}</span>;
+}
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -23,16 +38,27 @@ export default function Home() {
   const [submitted, setSubmitted] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All tools");
   const results = useMemo(() => tools.filter((tool) => `${tool.name} ${tool.category} ${tool.desc}`.toLowerCase().includes(query.toLowerCase())), [query]);
+  useEffect(() => {
+    function handleShortcut(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+      if (event.key === "Escape") setSearchOpen(false);
+    }
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, []);
   function subscribe(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setSubmitted(true); }
 
   return <main id="top">
-    <header className="site-header"><div className="nav-shell"><Logo/><nav className={menuOpen ? "nav-links open" : "nav-links"}>{["AI Tools","SaaS Reviews","Comparisons","Categories","Resources"].map((x,i)=><a key={x} href={["#tools","#reviews","#compare","#categories","#insights"][i]} onClick={()=>setMenuOpen(false)}>{x}</a>)}</nav><div className="nav-actions"><button className="icon-btn" onClick={()=>setSearchOpen(!searchOpen)} aria-label="Search"><Search size={18}/></button><a className="nav-cta" href="#tools">Explore tools <ArrowRight size={15}/></a><button className="menu-btn" onClick={()=>setMenuOpen(!menuOpen)} aria-label="Toggle menu">{menuOpen?<X/>:<Menu/>}</button></div></div>{searchOpen&&<div className="global-search"><Search size={20}/><input autoFocus value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search tools, reviews, or categories…"/><span>{results.length} results</span></div>}</header>
+    <header className="site-header"><div className="nav-shell"><Logo/><nav className={menuOpen ? "nav-links open" : "nav-links"}>{["AI Tools","SaaS Reviews","Comparisons","Categories","Resources"].map((x,i)=><a key={x} href={["#tools","#reviews","#compare","#categories","#insights"][i]} onClick={()=>setMenuOpen(false)}>{x}</a>)}</nav><div className="nav-actions"><button className="search-trigger" onClick={()=>setSearchOpen(!searchOpen)} aria-label="Search tools" aria-expanded={searchOpen}><Search size={16}/><span>Search tools…</span><kbd>⌘ K</kbd></button><a className="nav-cta" href="#tools">Explore tools <ArrowRight size={15}/></a><button className="menu-btn" onClick={()=>setMenuOpen(!menuOpen)} aria-label="Toggle menu">{menuOpen?<X/>:<Menu/>}</button></div></div>{searchOpen&&<div className="global-search"><Search size={20}/><input autoFocus value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search tools, reviews, or categories…"/><span>{results.length} results</span></div>}</header>
 
-    <section className="hero section-shell"><div className="hero-copy"><p className="eyebrow"><span/> The modern AI & SaaS index</p><h1>Find software<br/>worth your time.</h1><p className="hero-deck">Independent reviews, intelligent comparisons, and carefully curated insights on the AI tools and SaaS products shaping modern work.</p><div className="hero-actions"><a className="button primary" href="#tools">Explore AI tools <ArrowRight size={17}/></a><a className="text-link" href="#reviews">Browse SaaS reviews <ArrowRight size={15}/></a></div><p className="updated"><span/> Independently researched · Updated weekly</p></div><div className="discovery-panel"><div className="panel-top"><div><span className="panel-kicker">ALPHAMARKAI / DISCOVER</span><h2>Find your next essential tool.</h2></div><span className="edition">ISSUE 09.26</span></div><label className="tool-search"><Search size={19}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="What are you looking for?"/><kbd>⌘ K</kbd></label><div className="filter-row">{["All tools","AI writing","Coding","Productivity"].map(x=><button onClick={()=>setActiveCategory(x)} className={activeCategory===x?"active":""} key={x}>{x}</button>)}</div><div className="panel-list">{(query?results:tools.slice(0,3)).slice(0,3).map((tool,i)=><a href="#tools" className="panel-tool" key={tool.name}><span className={`product-mark m${i}`}>{tool.mark}</span><span><b>{tool.name}</b><small>{tool.category}</small></span>{tool.pick&&<em>EDITOR’S PICK</em>}<Score value={tool.score}/></a>)}{query&&results.length===0&&<p className="no-results">No exact match. Try “coding” or “productivity”.</p>}</div><div className="panel-verdict"><span>THIS WEEK’S VERDICT</span><p><b>Claude remains our choice for deep work.</b> Its writing quality and measured reasoning set the standard.</p><ArrowRight size={18}/></div></div></section>
+    <section className="hero section-shell"><div className="hero-copy"><p className="eyebrow"><span/> The modern AI & SaaS index</p><h1>Find software<br/>worth your time.</h1><p className="hero-deck">Independent reviews, intelligent comparisons, and carefully curated insights on the AI tools and SaaS products shaping modern work.</p><div className="hero-actions"><a className="button primary" href="#tools">Explore AI tools <ArrowRight size={17}/></a><a className="text-link" href="#reviews">Browse SaaS reviews <ArrowRight size={15}/></a></div><p className="updated"><span/> Independently researched · Updated weekly</p></div><div className="discovery-panel"><div className="panel-top"><div><span className="panel-kicker">ALPHAMARKAI / DISCOVER</span><h2>Find your next essential tool.</h2></div><span className="edition">ISSUE 09.26</span></div><label className="tool-search"><Search size={19}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="What are you looking for?"/><kbd>⌘ K</kbd></label><div className="filter-row">{["All tools","AI writing","Coding","Productivity"].map(x=><button onClick={()=>setActiveCategory(x)} className={activeCategory===x?"active":""} key={x}>{x}</button>)}</div><div className="panel-list">{(query?results:tools.slice(0,3)).slice(0,3).map(tool=><a href="#tools" className="panel-tool" key={tool.name}><ToolMark tool={tool}/><span><b>{tool.name}</b><small>{tool.category}</small></span>{tool.pick&&<em>EDITOR’S PICK</em>}<Score value={tool.score}/></a>)}{query&&results.length===0&&<p className="no-results">No exact match. Try “coding” or “productivity”.</p>}</div><div className="panel-verdict"><span>THIS WEEK’S VERDICT</span><p><b>Claude remains our choice for deep work.</b> Its writing quality and measured reasoning set the standard.</p><ArrowRight size={18}/></div></div></section>
 
     <section className="trust-band"><div className="section-shell trust-inner"><div className="trust-heading"><span>THE SIGNAL, NOT THE NOISE</span><h2>Trusted research for the software decisions that matter.</h2></div><div className="stats"><div><b>Focused</b><span>Research, not volume</span></div><div><b>Clear</b><span>Pros and trade-offs</span></div><div><b>Weekly</b><span>Software discoveries</span></div></div></div><div className="category-ticker">{["AI WRITING","AI CODING","PRODUCTIVITY","DESIGN","MARKETING","AUTOMATION","ANALYTICS","CUSTOMER SUPPORT"].map(x=><span key={x}>{x}</span>)}</div></section>
 
-    <section className="section-shell section" id="tools"><div className="section-head"><div><p className="section-number">01 / CURATED TOOLS</p><h2>The tools getting<br/><i>our attention.</i></h2></div><div><p>A sharper look at the AI products worth knowing about—tested, compared, and put into context.</p><a className="text-link" href="#categories">View all AI tools <ArrowRight size={15}/></a></div></div><div className="tools-grid"><article className="feature-tool"><div className="feature-art"><span className="feature-monogram">C</span><div className="code-lines"><span/><span/><span/><span/></div><p>BUILD<br/>AT THE SPEED<br/>OF THOUGHT</p></div><div className="tool-content"><div className="meta"><span>AI CODING</span><span>EDITOR’S PICK</span></div><h3>Cursor</h3><p>The code editor that made AI-assisted development feel less like a feature—and more like a new way of working.</p><div className="rating-line"><Score value="9.2"/><span>Exceptional</span></div><a href="#reviews">Read the full review <ArrowRight size={15}/></a></div></article><div className="tool-stack">{tools.filter(t=>t.name!=="Cursor").slice(0,3).map((tool,i)=><article className="tool-row" key={tool.name}><span className={`product-mark m${i+1}`}>{tool.mark}</span><div><span className="tool-category">{tool.category}</span><h3>{tool.name}</h3><p>{tool.desc}</p><a href="#reviews">Read review <ArrowRight size={14}/></a></div><Score value={tool.score}/></article>)}</div></div></section>
+    <section className="section-shell section" id="tools"><div className="section-head"><div><p className="section-number">01 / CURATED TOOLS</p><h2>The tools getting<br/><i>our attention.</i></h2></div><div><p>A sharper look at the AI products worth knowing about—tested, compared, and put into context.</p><a className="text-link" href="#categories">View all AI tools <ArrowRight size={15}/></a></div></div><div className="tools-grid"><article className="feature-tool"><div className="feature-art"><span className="feature-monogram">C</span><div className="code-lines"><span/><span/><span/><span/></div><p>BUILD<br/>AT THE SPEED<br/>OF THOUGHT</p></div><div className="tool-content"><div className="meta"><span>AI CODING</span><span>EDITOR’S PICK</span></div><h3>Cursor</h3><p>The code editor that made AI-assisted development feel less like a feature—and more like a new way of working.</p><div className="rating-line"><Score value="9.2"/><span>Exceptional</span></div><a href="#reviews">Read the full review <ArrowRight size={15}/></a></div></article><div className="tool-stack">{tools.filter(t=>t.name!=="Cursor").slice(0,3).map(tool=><article className="tool-row" key={tool.name}><ToolMark tool={tool}/><div><span className="tool-category">{tool.category}</span><h3>{tool.name}</h3><p>{tool.desc}</p><a href="#reviews">Read review <ArrowRight size={14}/></a></div><Score value={tool.score}/></article>)}</div></div></section>
 
     <section className="reviews section" id="reviews"><div className="section-shell"><div className="section-head light"><div><p className="section-number">02 / DEEP REVIEWS</p><h2>Software,<br/><i>properly reviewed.</i></h2></div><p>No endless feature lists. We look at what actually matters—usability, pricing, performance, flexibility, and whether a product earns a place in your stack.</p></div><div className="review-table"><div className="review-head"><span>LATEST REVIEW</span><span>THE VERDICT</span><span>SCORE</span></div>{[["Q","AI VIDEO · FREE / FROM $29","Quso AI","A practical all-in-one workflow for turning long recordings into social-ready clips.","Free plan to evaluate","AI clips need review","NEW","2026 REVIEW","/reviews/quso-ai"],["N","PRODUCTIVITY · $10–18/MO","Notion","Still the most flexible workspace for teams that value adaptability over rigid structure.","Remarkably flexible","Setup takes time","9.0","EXCELLENT","#"],["L","PROJECT MANAGEMENT · $0–14/MO","Linear","A focused issue tracker that proves business software can be fast, calm, and genuinely enjoyable.","Best-in-class speed","Opinionated workflow","9.3","EXCEPTIONAL","#"]].map(r=><article className="review-item" key={r[2]}><div className="review-name"><span className="product-mark light-mark">{r[0]}</span><div><small>{r[1]}</small><h3>{r[2]}</h3></div></div><div className="verdict"><p>{r[3]}</p><div className="pros-cons"><span><Check size={13}/> {r[4]}</span><span><Minus size={13}/> {r[5]}</span></div><a href={r[8]}>Read full review <ArrowRight size={14}/></a></div><div className="big-score">{r[6]}{r[6]!=="NEW"&&<small>/10</small>}<span>{r[7]}</span></div></article>)}</div></div></section>
 
