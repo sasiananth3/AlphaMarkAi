@@ -51,7 +51,9 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   verification: {
-    google: process.env.GOOGLE_SITE_VERIFICATION,
+    google:
+      process.env.GOOGLE_SITE_VERIFICATION ??
+      "8J3ZxRbUNgGhBOzggfVU0y22Q6kQta9mybY4ipET6_Q",
   },
   other: { "impact-site-verification": "1a8ef998-69e9-4a63-ac60-dd4508c5ac33" },
 };
