@@ -59,6 +59,8 @@ export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [subscribeError, setSubscribeError] = useState("");
   const [activeCategory, setActiveCategory] = useState("All tools");
   const results = useMemo(() => tools.filter((tool) => `${tool.name} ${tool.category} ${tool.desc}`.toLowerCase().includes(query.toLowerCase())), [query]);
   useEffect(() => {
@@ -70,9 +72,59 @@ export default function Home() {
       if (event.key === "Escape") setSearchOpen(false);
     }
     window.addEventListener("keydown", handleShortcut);
+    const search = new URLSearchParams(window.location.search);
+    const source =
+      search.get("utm_source") ||
+      (document.referrer ? new URL(document.referrer).hostname : "Direct");
+    void fetch("/api/analytics/page-view", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        path: window.location.pathname,
+        source,
+        referrer: document.referrer,
+      }),
+    });
     return () => window.removeEventListener("keydown", handleShortcut);
   }, []);
-  function subscribe(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setSubmitted(true); }
+  async function subscribe(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSubmitting(true);
+    setSubscribeError("");
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const search = new URLSearchParams(window.location.search);
+
+    try {
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.get("email"),
+          website: formData.get("website"),
+          source:
+            search.get("utm_source") ||
+            (document.referrer ? new URL(document.referrer).hostname : "Direct"),
+          utmCampaign: search.get("utm_campaign"),
+          utmMedium: search.get("utm_medium"),
+        }),
+      });
+      const result = (await response.json()) as { message?: string };
+
+      if (!response.ok) {
+        setSubscribeError(result.message ?? "Unable to save your email right now.");
+        return;
+      }
+
+      setSubmitted(true);
+      form.reset();
+    } catch {
+      setSubscribeError("Unable to connect. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return <main id="top">
     <header className="site-header"><div className="nav-shell"><Logo/><nav className={menuOpen ? "nav-links open" : "nav-links"}>{["AI Tools","SaaS Reviews","Comparisons","Categories","Resources"].map((x,i)=><a key={x} href={["#tools","#reviews","#compare","#categories","#insights"][i]} onClick={()=>setMenuOpen(false)}>{x}</a>)}</nav><div className="nav-actions"><button className="search-trigger" onClick={()=>setSearchOpen(!searchOpen)} aria-label="Search tools" aria-expanded={searchOpen}><Search size={16}/><span>Search tools…</span><kbd>⌘ K</kbd></button><a className="nav-cta" href="#tools">Explore tools <ArrowRight size={15}/></a><button className="menu-btn" onClick={()=>setMenuOpen(!menuOpen)} aria-label="Toggle menu">{menuOpen?<X/>:<Menu/>}</button></div></div>{searchOpen&&<div className="global-search"><Search size={20}/><input autoFocus value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search tools, reviews, or categories…"/><span>{results.length} results</span></div>}</header>
@@ -93,7 +145,7 @@ export default function Home() {
 
     <section className="principles section"><div className="section-shell principles-grid"><div><p className="section-number">WHY ALPHAMARKAI</p><h2>Less noise.<br/><i>Better software decisions.</i></h2></div><div className="principle-list">{[["01","Independent","Clear opinions without turning every product into a sales pitch."],["02","Practical","Reviews focused on how software performs in real workflows."],["03","Curated","We filter the overwhelming software landscape so you don’t have to."]].map(([n,t,d])=><div key={n}><span>{n}</span><h3>{t}</h3><p>{d}</p></div>)}</div></div></section>
 
-    <section className="newsletter"><div className="section-shell newsletter-inner"><div><p className="eyebrow"><span/> THE WEEKLY BRIEFING</p><h2>The useful side<br/><i>of AI.</i></h2></div><div>{submitted?<div className="success"><Check/> You’re on the list. See you next week.</div>:<><p>A concise weekly briefing of the tools, products, and software trends worth your attention.</p><form onSubmit={subscribe}><label><span className="sr-only">Your email address</span><input required type="email" placeholder="Your email address"/><button>Join Alphamarkai <ArrowRight size={16}/></button></label></form><small>No hype. No daily noise. Unsubscribe anytime.</small></>}</div></div></section>
+    <section className="newsletter"><div className="section-shell newsletter-inner"><div><p className="eyebrow"><span/> THE WEEKLY BRIEFING</p><h2>The useful side<br/><i>of AI.</i></h2></div><div>{submitted?<div className="success"><Check/> You’re on the list. See you next week.</div>:<><p>A concise weekly briefing of the tools, products, and software trends worth your attention.</p><form onSubmit={subscribe}><input className="sr-only" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true"/><label><span className="sr-only">Your email address</span><input required name="email" type="email" autoComplete="email" placeholder="Your email address" disabled={submitting}/><button disabled={submitting}>{submitting ? "Joining…" : "Join Alphamarkai"} <ArrowRight size={16}/></button></label></form>{subscribeError?<small role="alert">{subscribeError}</small>:<small>No hype. No daily noise. Unsubscribe anytime.</small>}</>}</div></div></section>
 
     <footer><div className="section-shell"><div className="footer-top"><div><Logo/><p>Independent intelligence for<br/>the modern software stack.</p></div>{[["Explore","AI Tools","SaaS Reviews","Comparisons","Categories","New Tools"],["Resources","Guides","Insights","Newsletter","Methodology"],["Company","About","Contact","Editorial Policy","Privacy","Terms"]].map(([head,...links])=><div className="footer-col" key={head}><b>{head}</b>{links.map(link=>link === "About" ? <Link href="/about" key={link}>{link}</Link> : <a href="#" key={link}>{link}</a>)}</div>)}</div><div className="footer-bottom"><span>© 2026 ALPHAMARKAI. INDEPENDENT BY DESIGN.</span><div><a href="#">X / TWITTER</a><a href="#">LINKEDIN</a><a href="#">RSS</a></div><span>MADE FOR BETTER DECISIONS</span></div></div></footer>
   </main>;
