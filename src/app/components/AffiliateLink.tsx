@@ -27,6 +27,13 @@ export default function AffiliateLink({
       affiliate: "quso_ai",
       placement,
     });
+
+    void fetch("/api/analytics/affiliate-click", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ affiliate: "quso_ai", placement }),
+      keepalive: true,
+    });
   }
 
   return (
