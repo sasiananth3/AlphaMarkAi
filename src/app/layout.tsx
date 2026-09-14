@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 const siteUrl = "https://alphamarkai.vercel.app";
+const siteName = "AlphaMarkAI";
+const siteDescription =
+  "AlphaMarkAI provides independent reviews, comparisons, and practical guidance for AI tools and SaaS products.";
 
 const siteStructuredData = {
   "@context": "https://schema.org",
@@ -10,18 +13,19 @@ const siteStructuredData = {
       "@type": "WebSite",
       "@id": `${siteUrl}/#website`,
       url: `${siteUrl}/`,
-      name: "AlphaMarkAI",
+      name: siteName,
       alternateName: ["Alpha Mark AI", "alphamarkai.vercel.app"],
-      description:
-        "Independent reviews and practical comparisons of AI tools and SaaS products.",
+      description: siteDescription,
+      inLanguage: "en",
       publisher: { "@id": `${siteUrl}/#organization` },
     },
     {
       "@type": "Organization",
       "@id": `${siteUrl}/#organization`,
-      name: "AlphaMarkAI",
+      name: siteName,
       alternateName: "Alpha Mark AI",
       url: `${siteUrl}/`,
+      logo: `${siteUrl}/icon.svg`,
       description:
         "An independent publication researching, reviewing, and comparing AI tools and SaaS products.",
     },
@@ -30,26 +34,46 @@ const siteStructuredData = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  applicationName: "AlphaMarkAI",
+  applicationName: siteName,
+  manifest: "/manifest.webmanifest",
   title: {
-    default: "AlphaMarkAI — Independent AI & SaaS Reviews",
+    default: "AlphaMarkAI: Independent AI Tools & SaaS Reviews",
     template: "%s | AlphaMarkAI",
   },
-  description: "Independent reviews, intelligent comparisons, and curated insight on the software shaping modern work.",
+  description: siteDescription,
+  authors: [{ name: siteName, url: siteUrl }],
+  creator: siteName,
+  publisher: siteName,
+  category: "technology",
   alternates: { canonical: "/" },
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: "/icon.svg",
+  },
   openGraph: {
     type: "website",
     url: "/",
-    siteName: "AlphaMarkAI",
-    title: "AlphaMarkAI — Independent AI & SaaS Reviews",
-    description: "Independent reviews and practical comparisons of AI tools and SaaS products.",
+    siteName,
+    locale: "en_US",
+    title: "AlphaMarkAI: Independent AI Tools & SaaS Reviews",
+    description: siteDescription,
   },
   twitter: {
-    card: "summary_large_image",
-    title: "AlphaMarkAI — Independent AI & SaaS Reviews",
-    description: "Independent reviews and practical comparisons of AI tools and SaaS products.",
+    card: "summary",
+    title: "AlphaMarkAI: Independent AI Tools & SaaS Reviews",
+    description: siteDescription,
   },
-  robots: { index: true, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   verification: {
     google:
       process.env.GOOGLE_SITE_VERIFICATION ??
